@@ -1,0 +1,346 @@
+#:import platform kivy.utils
+#:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+
+<Root>:
+
+    output_text: output_text
+    livefeed : livefeed
+    server_ip: server_ip
+    server_port: server_port
+    campagne: campagne
+    #clocktext: clocktext
+    timertext: timertext
+    fileoutname: fileoutname
+    scrollview: scrollview
+    sidebar: sidebar
+    topbar: topbar
+    username: username
+    password: password
+
+
+    #gpsblinker: gpsblinker
+    
+    
+    canvas.before:
+        Color:
+            rgba: (0.9,0.9,0.9,1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            
+
+    FloatLayout:
+        
+        size: root.width, root.height
+
+                
+            
+        Image:
+            id: livefeed
+            source: "noimage.png"
+            pos_hint: {"x": 0, "top": 1.1}
+
+            
+        ScrollView:
+            opacity: 0
+            id: scrollview
+            pos_hint: {"x": 0, "top": .3}
+            size_hint: (0.7,.3)
+            TextInput:
+                multiline: True
+                id: output_text
+                size_hint: (None,None)
+                pos_hint: {"x": .05+.2+.05, "top": .95}
+                disabled: True
+                readonly: True
+                effect_cls: ScrollEffect
+                height: max(self.minimum_height, scrollview.height)
+                width: scrollview.width
+
+                
+        MDList:
+            id: sidebar
+            opacity: .5
+            canvas:
+                Color:
+                    rgb: .2,.2,.2,.5
+                #opacity: .5
+
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            
+            pos_hint: {"x": -1, "top": 1-0.09}
+            size_hint: (.45,.6)
+            #orientation: "vertical"
+            #background_color: (.4,.4,.4,1)
+            
+            TextInput:
+                id: server_ip
+                text: "192.168.1.66"
+                opacity: 1
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.81, "top": 1-0.01}
+                size_hint: (0.8,0.1)
+                
+            TextInput:
+                id: server_port
+                text: "5000"
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.81, "top": 1-0.11}
+                size_hint: (0.8,0.1)
+                
+            Label:
+                text: "username"
+                pos_hint: {"x": 0.01, "top": 1-0.25}
+                size_hint: (0.1,0.1)
+                
+            TextInput:
+                id: username
+                text: ""
+                pos_hint: {"x": 0.15, "top": 1-0.25}
+                size_hint: (0.8,0.1)
+                opacity: 2.5
+                
+            Label:
+                text: "password"
+                pos_hint: {"x": 0.01, "top": 1-0.36}
+                size_hint: (0.1,0.1)
+                
+            TextInput:
+                id: password
+                text: ""
+                password: True
+                pos_hint: {"x": 0.15, "top": 1-0.36}
+                size_hint: (0.8,0.1)
+                opacity: 2.5
+                
+                
+            Button:
+                id: connect_button
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                text: "connect"
+                font_size: 24
+                color: (1,1,1,2)
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.1, "top": 0+0.11} if platform == 'android' else {"x": 1-0.70, "top": 0+0.11}
+                size_hint: (0.8,0.1) if platform == 'android' else (0.5,0.1)
+                opacity: 1.5
+                on_release: root.connect()
+                on_release: root.anim_menu()
+                
+                
+        FloatLayout:
+            id: write_to_file_tab
+            opacity: .5
+            canvas:
+                Color:
+                    rgb: .2,.2,.2,.5
+                #opacity: .5
+
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            
+            pos_hint: {"x": 0, "top": 2} #0.9
+            size_hint: (.45,.4)
+            orientation: "vertical"
+            #background_color: (.4,.4,.4,1)
+            
+                
+            TextInput:
+                id: fileoutname
+                text: ""
+                multiline: True
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 0.1, "top": 1-0.11}
+                size_hint: (0.8,0.2)
+                opacity: 1.5
+                
+            TextInput:
+                id: campagne
+                text: ""
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 0.1, "top": 1-0.33}
+                size_hint: (0.2,0.2)
+                opacity: 1.5
+                on_text: root.file_naming(campagne.text)
+                
+            Button:
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                text: "reset"
+                font_size: 24
+                color: (1,1,1,2)
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.8, "top": 0+0.65} if platform == 'android' else {"x": 1-0.50, "top": 0+0.65}
+                size_hint: (0.6,0.1) if platform == 'android' else (0.3,0.1)
+                opacity: 1.5
+                on_release: root.file_naming(campagne.text)
+                
+            Button:
+                id: write_to_file_button
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                text: "start"
+                font_size: 24
+                color: (1,1,1,2)
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.8, "top": 0+0.11} if platform == 'android' else {"x": 1-0.50, "top": 0+0.11}
+                size_hint: (0.6,0.1) if platform == 'android' else (0.3,0.1)
+                opacity: 1.5
+                on_release: root.write_to_file()
+                    
+                    
+            Button:
+                id: timertext
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                text: "00:00:00"
+                font_size: 24
+                disabled: True
+                color: (1,1,1,2)
+                background_disabled_normal: ''
+                background_color: (0.25,0.25,0.25,2)
+                pos_hint: {"x": 0+0.01, "top": 0+0.11} if platform == 'android' else {"x": 0+0.01, "top": 0+0.11}
+                size_hint: (0.6,0.1) if platform == 'android' else (0.3,0.1)
+                opacity: 1.5
+            
+            
+            
+            
+                
+                
+        FloatLayout:
+            id: serial_form
+            opacity: .5
+            canvas:
+                Color:
+                    rgb: .2,.2,.2,.5
+                #opacity: .5
+
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            
+            pos_hint: {"x": 0, "top": 2} #0.9
+            size_hint: (.45,.6)
+            orientation: "vertical"
+            #background_color: (.4,.4,.4,1)
+            
+            OneLineListItem:
+                id: active_serial
+                pos_hint: {"x": 0, "top": 1-0.01}
+                bg_color: (1,0.3,0.3,0.3)
+                opacity: 1.5
+                on_release: 
+                
+                
+            Label:
+                text: "lat"
+                pos_hint: {"x": 0.01, "top": 1-0.25}
+                size_hint: (0.1,0.1)
+                
+            TextInput:
+                id: serial_lat
+                text: ""
+                disabled: True
+                background_color: (0.2,0.2,0.2,0.2)
+                pos_hint: {"x": 0.15, "top": 1-0.25}
+                size_hint: (0.8,0.1)
+                opacity: 2.5
+                
+            Label:
+                text: "lon"
+                pos_hint: {"x": 0.01, "top": 1-0.36}
+                size_hint: (0.1,0.1)
+                
+            TextInput:
+                id: serial_lon
+                text: ""
+                disabled: True
+                background_color: (0.2,0.2,0.2,0.2)
+                pos_hint: {"x": 0.15, "top": 1-0.36}
+                size_hint: (0.8,0.1)
+                opacity: 2.5
+                
+            Label:
+                text: "fix"
+                pos_hint: {"x": 0.01, "top": 1-0.47}
+                size_hint: (0.1,0.1)
+                
+            TextInput:
+                id: serial_fix
+                text: ""
+                disabled: True
+                background_color: (0.2,0.2,0.2,0.2)
+                pos_hint: {"x": 0.15, "top": 1-0.47}
+                size_hint: (0.8,0.1)
+                opacity: 2.5
+                
+            Button:
+                id: serial_connect_button
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                text: "connect"
+                font_size: 24
+                color: (1,1,1,2)
+                background_color: (1,1,1,2)
+                pos_hint: {"x": 1-0.1, "top": 0+0.11} if platform == 'android' else {"x": 1-0.70, "top": 0+0.11}
+                size_hint: (0.8,0.1) if platform == 'android' else (0.5,0.1)
+                opacity: 1.5
+                on_release: root.start_read_from_serial_thread(active_serial.text)
+                on_release: root.change_btn_color(active_serial)
+                
+                
+
+                
+                
+                
+        MDTopAppBar:
+            id: topbar
+            #title: 
+            #anchor_title: 'right'
+            pos_hint: {"x": 0, "top": 1}
+            size_hint: (1,0.1)
+            left_action_items: [["menu", lambda x: root.anim_menu(self)]]
+
+                
+                
+
+
+
+
+<Alert>:
+    #alert_message: alert_message
+    
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        
+        Label:
+            id: alerttext
+            text: root.alert_message
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "ok"
+                on_release: root.cancel()
+                
+
+
+
+
+
+
+
+

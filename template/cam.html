@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<table>
+<tr>
+    <td>LIVEFEED</td>
+
+</tr>
+
+<tr>
+    <td><video  id="video"  swidth="{{ width }}" height="{{ height }}" autoplay style="background-color: grey"></video></td>
+    <td><canvas id="canvas" width=600 height=400 style="background-color: grey"></canvas></td>
+    <td><img id="screenshot_canvas" src="" width="{{ width }}" height="{{ height }}" style="background-color: grey" /></td>
+</tr>
+
+</table>
+
+<script>
+
+var video = document.getElementById('video');
+
+var canvas = document.getElementById('canvas');
+canvas.style.display = "none";
+var context = canvas.getContext('2d');
+
+var screenshot_canvas = document.getElementById('screenshot_canvas');
+
+
+
+// access to the camera
+if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+        
+        video.srcObject = stream;
+        video.play();
+
+        
+        window.setInterval(function() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height); 
+            canvas.toBlob(upload, "image/jpeg");
+        }, 100);
+    });
+}
+
+
+
+document.getElementById("send_server").addEventListener("click", function() {
+    // converte a BASE64 
+    screenshot_server.src = server.src;  
+});
+
+// snapshot e post a server
+function upload(file) {
+
+    var formdata = new FormData();
+    formdata.append("snap", file);
+	formdata.append("usr", localStorage.getItem("username"));
+	formdata.append("pwd", localStorage.getItem("password"));
+	console.log(window.localStorage.getItem("username"));
+	console.log(window.localStorage.getItem("password"));
+
+    
+    fetch("http://127.0.0.1:5000/storeframe", {
+        method: 'POST',
+        body: formdata,
+    }).catch(function(err) {
+        console.log('Fetch problem: ' + err.message);
+    });
+    
+}
+
+</script>
